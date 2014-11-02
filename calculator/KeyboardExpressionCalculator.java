@@ -1,6 +1,6 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.lang.Math;
+
 
 public class KeyboardExpressionCalculator implements ActionListener
 {
@@ -16,6 +16,7 @@ public static void main(String[] args) throws Exception
  double result      = 0;
  int    i           = 0;
  
+ //added by Kiki
  JFrame  window      = new JFrame("Complex Expression Calculator");
  JButton clearButton = new JButton("CLEAR"); 
  JLabel amountLabel = new JLabel("Enter amount", SwingConstants.RIGHT);
@@ -40,7 +41,6 @@ public static void main(String[] args) throws Exception
 	   if((expression.charAt(i) == '+')
 		||(expression.charAt(i) == '-')
 		||(expression.charAt(i) == '*')
-		||(expression.charAt(i) == '^')
 		||(expression.charAt(i) == '/'))
 		{
 		operator = expression.charAt(i);
@@ -68,12 +68,12 @@ public static void main(String[] args) throws Exception
      case '-': result = leftValue - rightValue; break;
      case '*': result = leftValue * rightValue; break;
      case '/': result = leftValue / rightValue; break;
-     case '^': result = Math.pow(leftValue, rightValue);
      }
    System.out.println(" = " + result);
    }
  }
 
+//added by Kiki
 public KeyboardExpressionCalculator()
 {
 	panel.setLayout(new GridLayout(1,5));
@@ -129,6 +129,7 @@ public void actionPerformed(ActionEvent ae) {
 	// buttons and text fields call here!	
 	}
 
+//added by Kiki
 public void clear() {
 	
 	amountTextField.setText("");
@@ -138,7 +139,7 @@ public void clear() {
 	amountTextField.requestFocus();
 
 }
-
+//added by Kiki
  public void actionListener(ActionEvent ae){
 	 
  }
