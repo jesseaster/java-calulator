@@ -6,6 +6,14 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.Math;
+import java.util.LinkedList;
+
+import java.util.Stack;
+import java.util.EmptyStackException;
+import java.io.*;
+import java.lang.String;
+import java.lang.StringIndexOutOfBoundsException;
+import java.lang.Math;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -81,8 +89,10 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.setVisible(true);
 		totalTextField.setEditable(false);
+		expressionMode.setSelected(true);
 		//totalTextField.setFont(new Font("Times Roman", Font.BOLD, 20));
 		clearButton.addActionListener(this);
+		expressionField.addActionListener(this);
 		amountTextField.addActionListener(this);
 		window.getContentPane().add(errorTextField, "South");
 		//window.getContentPane().add(logScrollPane, "Center");
@@ -115,7 +125,7 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 					String newTotal = accumulate(enteredAmount);
 					//if(newTotal.endsWith("00")||checkBox.isSelected())
 					newTotal=newTotal.substring(0, newTotal.length()-3);
-					totalTextField.setText(newTotal);
+					totalTextField.setText("2222");//newTotal);
 					errorTextField.setText("");
 					errorTextField.setBackground(Color.white);
 					/*logTextArea.append(newLine+newTotal);
@@ -132,61 +142,163 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 		if(expressionMode.isSelected() == true)
 		{
 			amountTextField.setEditable(false);
-			System.out.println("Enter a simple expression (single operator + - * /)");
-			while (true)
-			{
-				String expression = null;
-				try {
-					expression = br.readLine().trim();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				if (expression.equalsIgnoreCase("EXIT")
-						|| expression.equalsIgnoreCase("STOP")) return;
-				// Scan for operator
-				for (i = 0; i<expression.length(); i++)
-					if((expression.charAt(i) == '+')
-							||(expression.charAt(i) == '-')
-							||(expression.charAt(i) == '*')
-							||(expression.charAt(i) == '/'))
-					{
-						operator = expression.charAt(i);
-						break;
+
+			String expression = null;
+			try {
+				expression = expressionField.getText();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			System.out.println(expression);
+			totalTextField.setText(Shunting(expression));
+			
+		}
+	}
+
+	public static String Shunting(String infix){
+		String Pi = Double.toString(Math.PI);
+		String E = Double.toString(Math.E);
+		String test = infix.replaceAll("\\^", " ^ ");
+		test = test.replaceAll("r", " r ");
+		test = test.replaceAll("R", " r ");
+		test = test.replaceAll("\\+", " + ");
+		test = test.replaceAll("\\*", " * ");
+		test = test.replaceAll("\\(", " ( ");
+		test = test.replaceAll("\\)", " ) ");
+		test = test.replaceAll("/", " / ");
+		test = test.replaceAll("-", " - ");
+		test = test.replaceAll("pi", Pi);
+		test = test.replaceAll("e", E); 
+		test = test.replaceAll("^ +| +$|( )+", "$1");
+		test = test.replaceAll("- -", "+");
+		System.out.println(test);
+
+		if(test.contains("( +")){
+			System.out.println("operand missing before +");
+			System.exit(1);
+		}
+
+		System.out.printf("infix:   %s%n", test);
+		System.out.printf("postfix: %s%n", infixToPostfix(test));
+		return evalRPN(infixToPostfix(test));
+	}   
+
+	static String infixToPostfix(String infix) {
+		final String ops = "-+/*^r";
+		StringBuilder sb = new StringBuilder();
+		Stack<Integer> s = new Stack<>();
+
+		for (String token : infix.split("\\s")) {
+			char c = token.charAt(0);
+			int idx = ops.indexOf(c);
+			if (idx != -1 && token.length() == 1) {
+				if (s.isEmpty())
+					s.push(idx);
+				else {
+					while (!s.isEmpty()) {
+						int prec2 = s.peek() / 2;
+						int prec1 = idx / 2;
+						if (prec2 > prec1 || (prec2 == prec1 && c != '^'))
+							sb.append(ops.charAt(s.pop())).append(' ');
+						else break;
 					}
-				if (i == expression.length())
-				{
-					System.out.println("Expression does not contain an operator + - * or /");
-					continue;
+					s.push(idx);
 				}
-				leftOperand = expression.substring(0,i).trim();
-				rightOperand= expression.substring(i+1).trim();
-				try {
-					leftValue = Double.parseDouble(leftOperand);
-					rightValue= Double.parseDouble(rightOperand);
+			} else if (c == '(') {
+				s.push(-2);
+			} else if (c == ')') {
+				try{
+					while (s.peek() != -2) 
+						sb.append(ops.charAt(s.pop())).append(' ');
+					s.pop();
 				}
-				catch(NumberFormatException nfe)
-				{
-					System.out.println("Left or right operand is not numeric.");
-					continue;
+				catch (EmptyStackException ese){
+					System.out.println("unbalanced parentheses");
+					System.exit(1);
 				}
-				switch(operator)
-				{
-					case '+': result = leftValue + rightValue; break;
-					case '-': result = leftValue - rightValue; break;
-					case '*': result = leftValue * rightValue; break;
-					case '/': result = leftValue / rightValue; break;
-				}
-				System.out.println(" = " + result);
+			} else {
+				sb.append(token).append(' ');
 			}
 		}
+		try{
+			while (!s.isEmpty())
+				sb.append(ops.charAt(s.pop())).append(' ');
+		}
+		catch (StringIndexOutOfBoundsException ex){
+			System.out.println("unbalanced parentheses");
+			System.exit(1);
+		}
+		return sb.toString();
+	}   
+
+	public static String evalRPN(String expr){
+		String cleanExpr = cleanExpr(expr);
+		LinkedList<Double> stack = new LinkedList<Double>();
+		System.out.println("Input\tOperation\tStack after");
+		for(String token:cleanExpr.split("\\s")){
+			System.out.print(token+"\t");
+			Double tokenNum = null;
+			try{
+				tokenNum = Double.parseDouble(token);
+			}catch(NumberFormatException e){}
+			if(tokenNum != null){
+				System.out.print("Push\t\t");
+				stack.push(Double.parseDouble(token+""));
+			}else if(token.equals("*")){
+				System.out.print("Operate\t\t");
+				double secondOperand = stack.pop();
+				double firstOperand = stack.pop();
+				stack.push(firstOperand * secondOperand);
+			}else if(token.equals("/")){
+				System.out.print("Operate\t\t");
+				double secondOperand = stack.pop();
+				double firstOperand = stack.pop();
+				stack.push(firstOperand / secondOperand);
+			}else if(token.equals("-")){
+				System.out.print("Operate\t\t");
+				double secondOperand = stack.pop();
+				double firstOperand = stack.pop();
+				stack.push(firstOperand - secondOperand);
+			}else if(token.equals("+")){
+				System.out.print("Operate\t\t");
+				double secondOperand = stack.pop();
+				double firstOperand = stack.pop();
+				stack.push(firstOperand + secondOperand);
+			}else if(token.equals("^")){
+				System.out.print("Operate\t\t");
+				double secondOperand = stack.pop();
+				double firstOperand = stack.pop();
+				stack.push(Math.pow(firstOperand, secondOperand));
+			}else if(token.equals("r")){
+				System.out.print("Operate\t\t");
+				double secondOperand = stack.pop();
+				double firstOperand = stack.pop();
+				stack.push(Math.pow(firstOperand, 1.0 / secondOperand));
+			}else{//just in case
+				System.out.println("Error");
+				return "Error";
+			}
+			System.out.println(stack);
+		}
+		return Double.toString(stack.pop());
+	}
+
+	private static String cleanExpr(String expr){
+		//remove all non-operators, non-whitespace, and non digit chars
+		return expr.replaceAll("[^.^r^\\^\\*\\+\\-\\d/\\s]", "");
 	}
 
 	//added by Kiki
 	public void clear() {
-
+		accumulatorMode.setSelected(false);
+		expressionMode.setSelected(true);
+		graphMode.setSelected(false);
+		expressionField.setText("");
 		amountTextField.setText("");
 		totalTextField.setText("");
+		amountTextField.setEditable(true);
+		expressionField.setEditable(true);
 		amountTextField.requestFocus();
 
 	}
