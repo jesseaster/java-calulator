@@ -115,52 +115,52 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 
 
 	public void actionPerformed(ActionEvent ae) {
-		
+
 		if(ae.getSource()== clearButton)
 		{
 			clear();
 			return;
 		}
-		
-		
+
+
 		if(accumulatorMode.isSelected() == true)
 		{
 			expressionField.setEditable(false);	
 			xValue.setEditable(false);
 			amountTextField.setEditable(true);
 		}
-		
+
 		if(expressionMode.isSelected() == true)
 		{
 			expressionField.setEditable(true);	
 			xValue.setEditable(true);
 			amountTextField.setEditable(false);
 		}
-		
-			
+
+
 		if(ae.getSource()== amountTextField)
-			{
-				try{
-					String enteredAmount = amountTextField.getText();
-					String newTotal = accumulate(enteredAmount);
-					if(newTotal.endsWith("00")||checkBox.isSelected())
+		{
+			try{
+				String enteredAmount = amountTextField.getText();
+				String newTotal = accumulate(enteredAmount);
+				if(newTotal.endsWith("00")||checkBox.isSelected())
 					newTotal=newTotal.substring(0, newTotal.length()-3);
-					totalTextField.setText(newTotal);//newTotal);
-					errorTextField.setText("");
-					errorTextField.setBackground(Color.white);
-					logTextArea.append(newLine+newTotal);
-					  logTextArea.setCaretPosition(logTextArea.getDocument().getLength());
-					amountTextField.setText("");
-				}
-				catch(IllegalArgumentException iae)
-				{
-					errorTextField.setText(iae.getMessage());
-					errorTextField.setBackground(Color.pink);
-				}
+				totalTextField.setText(newTotal);//newTotal);
+				errorTextField.setText("");
+				errorTextField.setBackground(Color.white);
+				logTextArea.append(newLine+newTotal);
+				logTextArea.setCaretPosition(logTextArea.getDocument().getLength());
+				amountTextField.setText("");
 			}
-			
-		if(ae.getSource() == expressionField)
+			catch(IllegalArgumentException iae)
 			{
+				errorTextField.setText(iae.getMessage());
+				errorTextField.setBackground(Color.pink);
+			}
+		}
+
+		if(ae.getSource() == expressionField)
+		{
 
 			String expression = null;
 			try {
@@ -175,11 +175,11 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 				expressionField.setText("");
 			} catch(IllegalArgumentException iae)
 			{
-			errorTextField.setText(iae.getMessage());
-			errorTextField.setBackground(Color.pink);
+				errorTextField.setText(iae.getMessage());
+				errorTextField.setBackground(Color.pink);
 			}
-			
-			
+
+
 		}
 	}
 
@@ -199,6 +199,11 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 		test = test.replaceAll("e", E); 
 		test = test.replaceAll("^ +| +$|( )+", "$1");
 		test = test.replaceAll("- -", "+");
+		test = test.replaceAll("\\+ - (\\d)", "+ -$1");
+		test = test.replaceAll("\\* - (\\d)", "* -$1");
+		test = test.replaceAll("\\^ - (\\d)", "^ -$1");
+		test = test.replaceAll("\\( - (\\d)", "( -$1");
+		test = test.replaceAll("/ - (\\d)", "/ -$1");
 		System.out.println(test);
 
 		if(test.contains("( +")){
@@ -329,9 +334,9 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 		amountTextField.requestFocus();
 
 	}
-	
+
 	public void enter() {
-		
+
 	}
 	//added by Kiki
 	public void actionListener(ActionEvent ae){
