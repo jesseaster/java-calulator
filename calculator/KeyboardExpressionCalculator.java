@@ -22,28 +22,65 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 {
 	 
 	//added by Kiki
+	
+	double total=0;
+	
+	
 	 JFrame  window      = new JFrame("Complex Expression Calculator");
 	 JButton clearButton = new JButton("CLEAR"); 
 	 JLabel amountLabel = new JLabel("Enter amount", SwingConstants.RIGHT);
 	 JLabel totalLabel = new JLabel("Total", SwingConstants.RIGHT);
-		JTextField leftTextField = new JTextField(8);
-		JTextField rightTextField = new JTextField(8);
+		JTextField amountTextField = new JTextField(8);
 		JTextField totalTextField = new JTextField(8);
 		JPanel panel = new JPanel();
 		JTextField errorTextField = new JTextField(32);
-		JCheckBox checkBox= new JCheckBox("Drop.00");
-		JTextArea logTextArea = new JTextArea(20,40);
-		JScrollPane logScrollPane = new JScrollPane(logTextArea);
-		String newLine = System.lineSeparator();
+		//JCheckBox checkBox= new JCheckBox("Drop.00");
+		//JTextArea logTextArea = new JTextArea(20,40);
+		//JScrollPane logScrollPane = new JScrollPane(logTextArea);
+		//String newLine = System.lineSeparator();
 		JTextField xValue = new JTextField(8);
-		static JRadioButton accumulatorMode = new JRadioButton();
-		static JRadioButton expressionMode = new JRadioButton();
-		static JRadioButton graphMode = new JRadioButton();
+		static JRadioButton accumulatorMode = new JRadioButton("accumulator mode");
+		static JRadioButton expressionMode = new JRadioButton("expression mode");
+		static JRadioButton graphMode = new JRadioButton("graph mode");
 		ButtonGroup buttonGroup = new ButtonGroup();
 		
+		//added by Kiki
+		public KeyboardExpressionCalculator()
+		{
+			panel.setLayout(new GridLayout(1,5));
+			panel.add(clearButton);
+			panel.add(amountLabel);
+			panel.add(amountTextField);
+			panel.add(totalLabel);
+			panel.add(totalTextField);
+			panel.add(xValue);
+			//panel.add(checkBox);
+			buttonGroup.add(accumulatorMode);
+			buttonGroup.add(expressionMode);
+			buttonGroup.add(graphMode);
+			panel.add(accumulatorMode);
+			panel.add(expressionMode);
+			panel.add(graphMode);
+			window.getContentPane().add(panel,"North");
+			window.setSize(1000, 300);
+			window.setLocation(300,200);
+			window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			window.setVisible(true);
+			totalTextField.setEditable(false);
+			//totalTextField.setFont(new Font("Times Roman", Font.BOLD, 20));
+			clearButton.addActionListener(this);
+			amountTextField.addActionListener(this);
+			window.getContentPane().add(errorTextField, "South");
+			//window.getContentPane().add(logScrollPane, "Center");
+			errorTextField.setEditable(false);
+			//logTextArea.setEditable(false);
+			//logTextArea.setFont(new Font("Times Roman", Font.BOLD, 20));
+			amountTextField.requestFocus();
+		}
 		
 public static void main(String[] args) throws Exception
  {
+	new KeyboardExpressionCalculator();
  BufferedReader br = new BufferedReader(
                      new InputStreamReader(System.in));
  char operator = ' ';
@@ -100,40 +137,6 @@ public static void main(String[] args) throws Exception
  }
  }
 
-//added by Kiki
-public KeyboardExpressionCalculator()
-{
-	panel.setLayout(new GridLayout(1,5));
-	panel.add(clearButton);
-	panel.add(amountLabel);
-	panel.add(leftTextField);
-	panel.add(rightTextField);
-	panel.add(totalLabel);
-	panel.add(totalTextField);
-	panel.add(checkBox);
-	buttonGroup.add(accumulatorMode);
-	buttonGroup.add(expressionMode);
-	buttonGroup.add(graphMode);
-	panel.add(accumulatorMode);
-	panel.add(expressionMode);
-	panel.add(graphMode);
-	window.getContentPane().add(panel,"North");
-	window.setSize(600, 300);
-	window.setLocation(300,200);
-	window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	window.setVisible(true);
-	totalTextField.setEditable(false);
-	//totalTextField.setFont(new Font("Times Roman", Font.BOLD, 20));
-	clearButton.addActionListener(this);
-	leftTextField.addActionListener(this);
-	rightTextField.addActionListener(this);
-	window.getContentPane().add(errorTextField, "South");
-	window.getContentPane().add(logScrollPane, "Center");
-	errorTextField.setEditable(false);
-	logTextArea.setEditable(false);
-	//logTextArea.setFont(new Font("Times Roman", Font.BOLD, 20));
-	leftTextField.requestFocus();
-}
 
 
 public void actionPerformed(ActionEvent ae) {
@@ -142,10 +145,10 @@ public void actionPerformed(ActionEvent ae) {
 		clear();
 		return;
 		}
-	if(ae.getSource()== leftTextField)
+	if(ae.getSource()== amountTextField)
 	{
 	try{
-		String enteredAmount = leftTextField.getText();
+		String enteredAmount = amountTextField.getText();
 		String newTotal = accumulate(enteredAmount);
 		//if(newTotal.endsWith("00")||checkBox.isSelected())
 			newTotal=newTotal.substring(0, newTotal.length()-3);
@@ -154,7 +157,7 @@ public void actionPerformed(ActionEvent ae) {
 		errorTextField.setBackground(Color.white);
 		/*logTextArea.append(newLine+newTotal);
 		logTextArea.setCaretPosition(logTextArea.getDocument().getLength());*/
-		leftTextField.setText("");
+		amountTextField.setText("");
 		}
 	catch(IllegalArgumentException iae)
 		{
@@ -168,11 +171,9 @@ public void actionPerformed(ActionEvent ae) {
 //added by Kiki
 public void clear() {
 	
-	leftTextField.setText("");
-	rightTextField.setText("");
+	amountTextField.setText("");
 	totalTextField.setText("");
-	logTextArea.setText("");
-	leftTextField.requestFocus();
+	amountTextField.requestFocus();
 
 }
 //added by Kiki
@@ -182,8 +183,32 @@ public void clear() {
 
 @Override
 public String accumulate(String amount) throws IllegalArgumentException {
-	// TODO Auto-generated method stub
-	return null;
+	
+	amount=amount.trim();
+	double amount1;
+  
+        amount1 = Double.parseDouble(amount);
+   
+   
+    total=total+amount1;
+	String newTotal = String.valueOf(total);
+	if(newTotal.contains("."))
+	{
+		int periodOffset= newTotal.indexOf(".");
+		String decimalPortion= newTotal.substring(periodOffset+1);
+		if(decimalPortion.length()==0)
+			newTotal +="00";
+		if(decimalPortion.length()==1)
+			newTotal +="0";
+		if(decimalPortion.length()>2)
+		{
+			total += .005;
+			newTotal=String.valueOf(total);
+			periodOffset=newTotal.indexOf(".");
+			newTotal=newTotal.substring(0,periodOffset+3);
+		}
+	}
+	return newTotal;
 }
  
 }
