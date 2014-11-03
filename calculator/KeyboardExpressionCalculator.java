@@ -3,6 +3,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.Math;
 
@@ -24,43 +25,56 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 	//added by Kiki
 	
 	double total=0;
-	
+	 BufferedReader br = new BufferedReader(
+             new InputStreamReader(System.in));
+char operator = ' ';
+String leftOperand = null;
+double leftValue   = 0;
+String rightOperand= null;
+double rightValue  = 0;
+double result      = 0;
+int    i           = 0;
 	
 	 JFrame  window      = new JFrame("Complex Expression Calculator");
 	 JButton clearButton = new JButton("CLEAR"); 
 	 JLabel amountLabel = new JLabel("Enter amount", SwingConstants.RIGHT);
 	 JLabel totalLabel = new JLabel("Total", SwingConstants.RIGHT);
+	 JLabel expressionLabel = new JLabel("Enter expression", SwingConstants.RIGHT);
+	 JLabel xLabel = new JLabel("X value", SwingConstants.RIGHT);
 		JTextField amountTextField = new JTextField(8);
 		JTextField totalTextField = new JTextField(8);
+		JTextField expressionField= new JTextField();
+		JTextField xValue = new JTextField(8);
 		JPanel panel = new JPanel();
 		JTextField errorTextField = new JTextField(32);
 		//JCheckBox checkBox= new JCheckBox("Drop.00");
 		//JTextArea logTextArea = new JTextArea(20,40);
 		//JScrollPane logScrollPane = new JScrollPane(logTextArea);
 		//String newLine = System.lineSeparator();
-		JTextField xValue = new JTextField(8);
-		static JRadioButton accumulatorMode = new JRadioButton("accumulator mode");
-		static JRadioButton expressionMode = new JRadioButton("expression mode");
-		static JRadioButton graphMode = new JRadioButton("graph mode");
+		JRadioButton accumulatorMode = new JRadioButton("accumulator mode");
+		JRadioButton expressionMode = new JRadioButton("expression mode");
+		JRadioButton graphMode = new JRadioButton("graph mode");
 		ButtonGroup buttonGroup = new ButtonGroup();
 		
 		//added by Kiki
 		public KeyboardExpressionCalculator()
 		{
-			panel.setLayout(new GridLayout(1,5));
+			panel.setLayout(new GridLayout(2,3));
 			panel.add(clearButton);
-			panel.add(amountLabel);
-			panel.add(amountTextField);
-			panel.add(totalLabel);
-			panel.add(totalTextField);
-			panel.add(xValue);
-			//panel.add(checkBox);
 			buttonGroup.add(accumulatorMode);
 			buttonGroup.add(expressionMode);
 			buttonGroup.add(graphMode);
 			panel.add(accumulatorMode);
 			panel.add(expressionMode);
 			panel.add(graphMode);
+			panel.add(amountLabel);
+			panel.add(amountTextField);
+			panel.add(expressionLabel);
+			panel.add(expressionField);
+			panel.add(xLabel);
+			panel.add(xValue);
+			panel.add(totalLabel);
+			panel.add(totalTextField);
 			window.getContentPane().add(panel,"North");
 			window.setSize(1000, 300);
 			window.setLocation(300,200);
@@ -81,60 +95,6 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 public static void main(String[] args) throws Exception
  {
 	new KeyboardExpressionCalculator();
- BufferedReader br = new BufferedReader(
-                     new InputStreamReader(System.in));
- char operator = ' ';
- String leftOperand = null;
- double leftValue   = 0;
- String rightOperand= null;
- double rightValue  = 0;
- double result      = 0;
- int    i           = 0;
- 
- if(expressionMode.isSelected() == true )
- {
- System.out.println("Enter a simple expression (single operator + - * /)");
- while (true)
-   {
-   String expression = br.readLine().trim();
-   if (expression.equalsIgnoreCase("EXIT")
-	|| expression.equalsIgnoreCase("STOP")) return;
-   // Scan for operator
-   for (i = 0; i<expression.length(); i++)
-	   if((expression.charAt(i) == '+')
-		||(expression.charAt(i) == '-')
-		||(expression.charAt(i) == '*')
-		||(expression.charAt(i) == '/'))
-		{
-		operator = expression.charAt(i);
-		break;
-		}
-   if (i == expression.length())
-      {
-	  System.out.println("Expression does not contain an operator + - * or /");
-	  continue;
-      }
-   leftOperand = expression.substring(0,i).trim();
-   rightOperand= expression.substring(i+1).trim();
-   try {
-	   leftValue = Double.parseDouble(leftOperand);
-	   rightValue= Double.parseDouble(rightOperand);
-       }
-   catch(NumberFormatException nfe)
-       {
-	   System.out.println("Left or right operand is not numeric.");
-	   continue;
-       }
-   switch(operator)
-     {
-     case '+': result = leftValue + rightValue; break;
-     case '-': result = leftValue - rightValue; break;
-     case '*': result = leftValue * rightValue; break;
-     case '/': result = leftValue / rightValue; break;
-     }
-   System.out.println(" = " + result);
-   }
- }
  }
 
 
@@ -145,6 +105,9 @@ public void actionPerformed(ActionEvent ae) {
 		clear();
 		return;
 		}
+	if(accumulatorMode.isSelected() == true)
+	{
+		expressionField.setEditable(false);	
 	if(ae.getSource()== amountTextField)
 	{
 	try{
@@ -165,7 +128,58 @@ public void actionPerformed(ActionEvent ae) {
 		errorTextField.setBackground(Color.pink);
 		}
 	}
-	// buttons and text fields call here!	
+	}
+	if(expressionMode.isSelected() == true)
+	 {
+		 amountTextField.setEditable(false);
+	 System.out.println("Enter a simple expression (single operator + - * /)");
+	 while (true)
+	   {
+	   String expression = null;
+	try {
+		expression = br.readLine().trim();
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	   if (expression.equalsIgnoreCase("EXIT")
+		|| expression.equalsIgnoreCase("STOP")) return;
+	   // Scan for operator
+	   for (i = 0; i<expression.length(); i++)
+		   if((expression.charAt(i) == '+')
+			||(expression.charAt(i) == '-')
+			||(expression.charAt(i) == '*')
+			||(expression.charAt(i) == '/'))
+			{
+			operator = expression.charAt(i);
+			break;
+			}
+	   if (i == expression.length())
+	      {
+		  System.out.println("Expression does not contain an operator + - * or /");
+		  continue;
+	      }
+	   leftOperand = expression.substring(0,i).trim();
+	   rightOperand= expression.substring(i+1).trim();
+	   try {
+		   leftValue = Double.parseDouble(leftOperand);
+		   rightValue= Double.parseDouble(rightOperand);
+	       }
+	   catch(NumberFormatException nfe)
+	       {
+		   System.out.println("Left or right operand is not numeric.");
+		   continue;
+	       }
+	   switch(operator)
+	     {
+	     case '+': result = leftValue + rightValue; break;
+	     case '-': result = leftValue - rightValue; break;
+	     case '*': result = leftValue * rightValue; break;
+	     case '/': result = leftValue / rightValue; break;
+	     }
+	   System.out.println(" = " + result);
+	   }
+	 }
 	}
 
 //added by Kiki
