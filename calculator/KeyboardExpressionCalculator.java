@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.Math;
 import java.util.LinkedList;
+import java.util.NoSuchElementException;
 import java.util.Stack;
 import java.util.EmptyStackException;
 import java.io.*;
@@ -77,7 +78,7 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 		panel.add(totalLabel);
 		panel.add(totalTextField);
 		window.getContentPane().add(panel,"North");
-		window.setSize(200, 500);
+		window.setSize(400, 500);
 		window.setLocation(300,200);
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.setVisible(true);
@@ -91,6 +92,7 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 		accumulatorMode.addActionListener(this);
 		graphMode.addActionListener(this);
 		amountTextField.addActionListener(this);
+		xValue.addActionListener(this);
 		window.getContentPane().add(errorTextField, "South");
 		window.getContentPane().add(logScrollPane, "Center");
 		errorTextField.setEditable(false);
@@ -144,7 +146,7 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 		if(expressionMode.isSelected() == true)
 		{	
 			xValue.setEditable(true);
-			if(ae.getSource() == amountTextField)
+			if(ae.getSource() == amountTextField  || ae.getSource() == xValue)
 			{
 
 				String expression = null;
@@ -160,9 +162,16 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 					logTextArea.append(newLine+newTotal);
 					logTextArea.setCaretPosition(logTextArea.getDocument().getLength());
 					amountTextField.setText("");
+					xValue.setText("");
+					amountTextField.requestFocus();
 				} catch(IllegalArgumentException iae)
 				{
 					errorTextField.setText(iae.getMessage());
+					errorTextField.setBackground(Color.pink);
+				}
+				catch(NoSuchElementException nsee)
+				{
+					errorTextField.setText(nsee.getMessage());
 					errorTextField.setBackground(Color.pink);
 				}
 
@@ -198,8 +207,19 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 
 		if(test.contains("( +")){
 			System.out.println("operand missing before +");
-			System.exit(1);
+			throw new IllegalArgumentException("operand missing before +");
+			//.exit(1);
 		}
+		
+		if(test.trim().contains("++")){
+			throw new IllegalArgumentException("wrong operator");
+		}
+		
+		if((test.trim()==null) || (test.trim().length()==0))
+			throw new IllegalArgumentException("Expression is null or zero length.");
+		
+		if((test.trim().contains("x"))&& x_value == null)
+			throw new NoSuchElementException("x value not entered");
 
 		System.out.printf("infix:   %s%n", test);
 		System.out.printf("postfix: %s%n", infixToPostfix(test));
@@ -237,7 +257,8 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 				}
 				catch (EmptyStackException ese){
 					System.out.println("unbalanced parentheses");
-					System.exit(1);
+					throw new IllegalArgumentException("unbalanced parentheses");
+					//System.exit(1);
 				}
 			} else {
 				sb.append(token).append(' ');
@@ -249,7 +270,8 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 		}
 		catch (StringIndexOutOfBoundsException ex){
 			System.out.println("unbalanced parentheses");
-			System.exit(1);
+			throw new IllegalArgumentException("unbalanced parentheses");
+			//System.exit(1);
 		}
 		return sb.toString();
 	}   
@@ -297,11 +319,14 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 				double secondOperand = stack.pop();
 				double firstOperand = stack.pop();
 				stack.push(Math.pow(firstOperand, 1.0 / secondOperand));
-			}else{//just in case
-				System.out.println("Error");
-				return "Error";
 			}
-			System.out.println(stack);
+			
+			else{//just in case
+				System.out.println("Error");
+				throw new IllegalArgumentException("Syntax error");
+				//return "Error";
+			}
+			//System.out.println(stack);
 		}
 		return Double.toString(stack.pop());
 	}
@@ -332,31 +357,52 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 	@Override
 		public String accumulate(String amount) throws IllegalArgumentException {
 
-			amount=amount.trim();
-			double amount1;
-
-			amount1 = Double.parseDouble(amount);
-
-
-			total=total+amount1;
-			String newTotal = String.valueOf(total);
-			if(newTotal.contains("."))
+		amount=amount.trim();
+		if((amount==null) || (amount.length()==0))
+			throw new IllegalArgumentException("Amount parameter is null or zero length.");
+		if(amount.startsWith("/") || amount.startsWith("x") || amount.startsWith("*"))
+			throw new IllegalArgumentException( "Only add an subtract operations are supported in accumulator mode.");
+		if(amount.startsWith("+ ")|| amount.startsWith("- "))
+			amount=amount.substring(0,1)+amount.substring(1).trim();
+		if(amount.startsWith("0"))
+			throw new IllegalArgumentException("Amount must not begin with a zero");
+		if(amount.contains("."))
+		{
+			int periodOffset=amount.indexOf(".");
+			String decimalPortion = amount.substring(periodOffset+1);
+			if(decimalPortion.length()!=2)
+				throw new IllegalArgumentException("A decimal point must be followed by 2 decimal digits.");
+		}
+		double amount1;
+	    try {
+	        amount1 = Double.parseDouble(amount);
+	        }
+	    catch(NumberFormatException nfe)
+	        {
+	        throw new IllegalArgumentException("Amount must be numeric");
+	        }
+	    
+		total=total+amount1;
+		String newTotal = String.valueOf(total);
+		if(newTotal.contains("."))
+		{
+			int periodOffset= newTotal.indexOf(".");
+			String decimalPortion= newTotal.substring(periodOffset+1);
+			if(decimalPortion.length()==0)
+				newTotal +="00";
+			if(decimalPortion.length()==1)
+				newTotal +="0";
+			if(decimalPortion.length()>2)
 			{
-				int periodOffset= newTotal.indexOf(".");
-				String decimalPortion= newTotal.substring(periodOffset+1);
-				if(decimalPortion.length()==0)
-					newTotal +="00";
-				if(decimalPortion.length()==1)
-					newTotal +="0";
-				if(decimalPortion.length()>2)
-				{
-					total += .005;
-					newTotal=String.valueOf(total);
-					periodOffset=newTotal.indexOf(".");
-					newTotal=newTotal.substring(0,periodOffset+3);
-				}
+				total += .005;
+				newTotal=String.valueOf(total);
+				periodOffset=newTotal.indexOf(".");
+				newTotal=newTotal.substring(0,periodOffset+3);
 			}
-			return newTotal;
+		}
+		return newTotal;
+		
+		
 		}
 
 }
