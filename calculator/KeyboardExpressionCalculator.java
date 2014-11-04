@@ -163,10 +163,12 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 		{
 
 			String expression = null;
+			String x_value = null;
 			try {
 				expression = expressionField.getText();
+				x_value = xValue.getText();
 				System.out.println(expression);
-				String newTotal= Shunting(expression);
+				String newTotal= Shunting(expression, x_value);
 				totalTextField.setText(newTotal);
 				errorTextField.setText("");
 				errorTextField.setBackground(Color.white);
@@ -183,10 +185,11 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 		}
 	}
 
-	public static String Shunting(String infix){
+	public static String Shunting(String infix, String x_value){
 		String Pi = Double.toString(Math.PI);
 		String E = Double.toString(Math.E);
 		String test = infix.replaceAll("\\^", " ^ ");
+		test = test.replaceAll("x", x_value);
 		test = test.replaceAll("r", " r ");
 		test = test.replaceAll("R", " r ");
 		test = test.replaceAll("\\+", " + ");
@@ -329,6 +332,7 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 		expressionField.setText("");
 		amountTextField.setText("");
 		totalTextField.setText("");
+		xValue.setText("");
 		amountTextField.setEditable(true);
 		expressionField.setEditable(true);
 		amountTextField.requestFocus();
