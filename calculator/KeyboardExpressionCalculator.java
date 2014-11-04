@@ -29,7 +29,6 @@ import javax.swing.SwingConstants;
 public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 {
 
-	//added by Kiki
 
 	double total=0;
 	BufferedReader br = new BufferedReader(
@@ -44,13 +43,11 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 
 	JFrame  window      = new JFrame("Complex Expression Calculator");
 	JButton clearButton = new JButton("CLEAR"); 
-	JLabel amountLabel = new JLabel("Enter amount", SwingConstants.RIGHT);
+	JLabel amountLabel = new JLabel("Enter", SwingConstants.RIGHT);
 	JLabel totalLabel = new JLabel("Total", SwingConstants.RIGHT);
-	JLabel expressionLabel = new JLabel("Enter expression", SwingConstants.RIGHT);
 	JLabel xLabel = new JLabel("X value", SwingConstants.RIGHT);
 	JTextField amountTextField = new JTextField(8);
 	JTextField totalTextField = new JTextField(8);
-	JTextField expressionField= new JTextField();
 	JTextField xValue = new JTextField(8);
 	JPanel panel = new JPanel();
 	JTextField errorTextField = new JTextField(32);
@@ -63,10 +60,9 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 	JRadioButton graphMode = new JRadioButton("graph mode");
 	ButtonGroup buttonGroup = new ButtonGroup();
 
-	//added by Kiki
 	public KeyboardExpressionCalculator()
 	{
-		panel.setLayout(new GridLayout(2,3));
+		panel.setLayout(new GridLayout(0,1));
 		panel.add(clearButton);
 		buttonGroup.add(accumulatorMode);
 		buttonGroup.add(expressionMode);
@@ -76,28 +72,24 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 		panel.add(graphMode);
 		panel.add(amountLabel);
 		panel.add(amountTextField);
-		panel.add(expressionLabel);
-		panel.add(expressionField);
 		panel.add(xLabel);
 		panel.add(xValue);
 		panel.add(totalLabel);
 		panel.add(totalTextField);
 		window.getContentPane().add(panel,"North");
-		window.setSize(1000, 300);
+		window.setSize(200, 500);
 		window.setLocation(300,200);
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.setVisible(true);
 		totalTextField.setEditable(false);
 		expressionMode.setSelected(true);
-		expressionField.setEditable(true);	
 		xValue.setEditable(true);
-		amountTextField.setEditable(false);
+		amountTextField.setEditable(true);
 		//totalTextField.setFont(new Font("Times Roman", Font.BOLD, 20));
 		clearButton.addActionListener(this);
 		expressionMode.addActionListener(this);
 		accumulatorMode.addActionListener(this);
 		graphMode.addActionListener(this);
-		expressionField.addActionListener(this);
 		amountTextField.addActionListener(this);
 		window.getContentPane().add(errorTextField, "South");
 		window.getContentPane().add(logScrollPane, "Center");
@@ -125,64 +117,59 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 
 		if(accumulatorMode.isSelected() == true)
 		{
-			expressionField.setEditable(false);	
 			xValue.setEditable(false);
-			amountTextField.setEditable(true);
+			if(ae.getSource()== amountTextField)
+			{
+				try{
+					String enteredAmount = amountTextField.getText();
+					String newTotal = accumulate(enteredAmount);
+					if(newTotal.endsWith("00")||checkBox.isSelected())
+						newTotal=newTotal.substring(0, newTotal.length()-3);
+					totalTextField.setText(newTotal);//newTotal);
+					errorTextField.setText("");
+					errorTextField.setBackground(Color.white);
+					logTextArea.append(newLine+newTotal);
+					logTextArea.setCaretPosition(logTextArea.getDocument().getLength());
+					amountTextField.setText("");
+				}
+				catch(IllegalArgumentException iae)
+				{
+					errorTextField.setText(iae.getMessage());
+					errorTextField.setBackground(Color.pink);
+				}
+			}
+
 		}
 
 		if(expressionMode.isSelected() == true)
-		{
-			expressionField.setEditable(true);	
+		{	
 			xValue.setEditable(true);
-			amountTextField.setEditable(false);
-		}
-
-
-		if(ae.getSource()== amountTextField)
-		{
-			try{
-				String enteredAmount = amountTextField.getText();
-				String newTotal = accumulate(enteredAmount);
-				if(newTotal.endsWith("00")||checkBox.isSelected())
-					newTotal=newTotal.substring(0, newTotal.length()-3);
-				totalTextField.setText(newTotal);//newTotal);
-				errorTextField.setText("");
-				errorTextField.setBackground(Color.white);
-				logTextArea.append(newLine+newTotal);
-				logTextArea.setCaretPosition(logTextArea.getDocument().getLength());
-				amountTextField.setText("");
-			}
-			catch(IllegalArgumentException iae)
+			if(ae.getSource() == amountTextField)
 			{
-				errorTextField.setText(iae.getMessage());
-				errorTextField.setBackground(Color.pink);
+
+				String expression = null;
+				String x_value = null;
+				try {
+					expression = amountTextField.getText();
+					x_value = xValue.getText();
+					System.out.println(expression);
+					String newTotal= Shunting(expression, x_value);
+					totalTextField.setText(newTotal);
+					errorTextField.setText("");
+					errorTextField.setBackground(Color.white);
+					logTextArea.append(newLine+newTotal);
+					logTextArea.setCaretPosition(logTextArea.getDocument().getLength());
+					amountTextField.setText("");
+				} catch(IllegalArgumentException iae)
+				{
+					errorTextField.setText(iae.getMessage());
+					errorTextField.setBackground(Color.pink);
+				}
+
+
 			}
 		}
 
-		if(ae.getSource() == expressionField)
-		{
-
-			String expression = null;
-			String x_value = null;
-			try {
-				expression = expressionField.getText();
-				x_value = xValue.getText();
-				System.out.println(expression);
-				String newTotal= Shunting(expression, x_value);
-				totalTextField.setText(newTotal);
-				errorTextField.setText("");
-				errorTextField.setBackground(Color.white);
-				logTextArea.append(newLine+newTotal);
-				logTextArea.setCaretPosition(logTextArea.getDocument().getLength());
-				expressionField.setText("");
-			} catch(IllegalArgumentException iae)
-			{
-				errorTextField.setText(iae.getMessage());
-				errorTextField.setBackground(Color.pink);
-			}
-
-
-		}
 	}
 
 	public static String Shunting(String infix, String x_value){
@@ -329,20 +316,15 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 		accumulatorMode.setSelected(false);
 		expressionMode.setSelected(true);
 		graphMode.setSelected(false);
-		expressionField.setText("");
 		amountTextField.setText("");
-		totalTextField.setText("");
 		xValue.setText("");
+		totalTextField.setText("");
 		amountTextField.setEditable(true);
-		expressionField.setEditable(true);
 		amountTextField.requestFocus();
 
 	}
-
-	public void enter() {
-
-	}
-	//added by Kiki
+	
+	
 	public void actionListener(ActionEvent ae){
 
 	}
