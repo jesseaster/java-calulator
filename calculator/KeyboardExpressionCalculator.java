@@ -211,7 +211,7 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 			//.exit(1);
 		}
 
-		if(test.trim().contains("++")){
+		if(test.trim().contains("+ +")){
 			throw new IllegalArgumentException("wrong operator");
 		}
 
@@ -333,7 +333,11 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 
 	private static String cleanExpr(String expr){
 		//remove all non-operators, non-whitespace, and non digit chars
-		return expr.replaceAll("[^.^r^\\^\\*\\+\\-\\d/\\s]", "");
+		String cleaned = expr.replaceAll("[^.^r^\\^\\*\\+\\-\\d/\\s]", "");
+		if (!cleaned.equals(expr)){
+			throw new IllegalArgumentException("Amount must be numeric");
+		}
+		return cleaned;
 	}
 
 	//added by Kiki
