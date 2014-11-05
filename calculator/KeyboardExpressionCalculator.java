@@ -155,7 +155,7 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 					expression = amountTextField.getText();
 					x_value = xValue.getText();
 					System.out.println(expression);
-					String newTotal= Shunting(expression, x_value);
+					String newTotal= calculate(expression, x_value);
 					totalTextField.setText(newTotal);
 					errorTextField.setText("");
 					errorTextField.setBackground(Color.white);
@@ -181,7 +181,7 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 
 	}
 
-	public static String Shunting(String infix, String x_value){
+	public static String calculate(String infix, String x_value){
 		String Pi = Double.toString(Math.PI);
 		String E = Double.toString(Math.E);
 		String test = infix.replaceAll("\\^", " ^ ");
@@ -210,14 +210,14 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 			throw new IllegalArgumentException("operand missing before +");
 			//.exit(1);
 		}
-		
+
 		if(test.trim().contains("++")){
 			throw new IllegalArgumentException("wrong operator");
 		}
-		
+
 		if((test.trim()==null) || (test.trim().length()==0))
 			throw new IllegalArgumentException("Expression is null or zero length.");
-		
+
 		if((test.trim().contains("x"))&& x_value == null)
 			throw new NoSuchElementException("x value not entered");
 
@@ -320,7 +320,7 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 				double firstOperand = stack.pop();
 				stack.push(Math.pow(firstOperand, 1.0 / secondOperand));
 			}
-			
+
 			else{//just in case
 				System.out.println("Error");
 				throw new IllegalArgumentException("Syntax error");
@@ -348,8 +348,8 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 		amountTextField.requestFocus();
 
 	}
-	
-	
+
+
 	public void actionListener(ActionEvent ae){
 
 	}
@@ -357,52 +357,52 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 	@Override
 		public String accumulate(String amount) throws IllegalArgumentException {
 
-		amount=amount.trim();
-		if((amount==null) || (amount.length()==0))
-			throw new IllegalArgumentException("Amount parameter is null or zero length.");
-		if(amount.startsWith("/") || amount.startsWith("x") || amount.startsWith("*"))
-			throw new IllegalArgumentException( "Only add an subtract operations are supported in accumulator mode.");
-		if(amount.startsWith("+ ")|| amount.startsWith("- "))
-			amount=amount.substring(0,1)+amount.substring(1).trim();
-		if(amount.startsWith("0"))
-			throw new IllegalArgumentException("Amount must not begin with a zero");
-		if(amount.contains("."))
-		{
-			int periodOffset=amount.indexOf(".");
-			String decimalPortion = amount.substring(periodOffset+1);
-			if(decimalPortion.length()!=2)
-				throw new IllegalArgumentException("A decimal point must be followed by 2 decimal digits.");
-		}
-		double amount1;
-	    try {
-	        amount1 = Double.parseDouble(amount);
-	        }
-	    catch(NumberFormatException nfe)
-	        {
-	        throw new IllegalArgumentException("Amount must be numeric");
-	        }
-	    
-		total=total+amount1;
-		String newTotal = String.valueOf(total);
-		if(newTotal.contains("."))
-		{
-			int periodOffset= newTotal.indexOf(".");
-			String decimalPortion= newTotal.substring(periodOffset+1);
-			if(decimalPortion.length()==0)
-				newTotal +="00";
-			if(decimalPortion.length()==1)
-				newTotal +="0";
-			if(decimalPortion.length()>2)
+			amount=amount.trim();
+			if((amount==null) || (amount.length()==0))
+				throw new IllegalArgumentException("Amount parameter is null or zero length.");
+			if(amount.startsWith("/") || amount.startsWith("x") || amount.startsWith("*"))
+				throw new IllegalArgumentException( "Only add an subtract operations are supported in accumulator mode.");
+			if(amount.startsWith("+ ")|| amount.startsWith("- "))
+				amount=amount.substring(0,1)+amount.substring(1).trim();
+			if(amount.startsWith("0"))
+				throw new IllegalArgumentException("Amount must not begin with a zero");
+			if(amount.contains("."))
 			{
-				total += .005;
-				newTotal=String.valueOf(total);
-				periodOffset=newTotal.indexOf(".");
-				newTotal=newTotal.substring(0,periodOffset+3);
+				int periodOffset=amount.indexOf(".");
+				String decimalPortion = amount.substring(periodOffset+1);
+				if(decimalPortion.length()!=2)
+					throw new IllegalArgumentException("A decimal point must be followed by 2 decimal digits.");
 			}
-		}
-		return newTotal;
-		
-		
+			double amount1;
+			try {
+				amount1 = Double.parseDouble(amount);
+			}
+			catch(NumberFormatException nfe)
+			{
+				throw new IllegalArgumentException("Amount must be numeric");
+			}
+
+			total=total+amount1;
+			String newTotal = String.valueOf(total);
+			if(newTotal.contains("."))
+			{
+				int periodOffset= newTotal.indexOf(".");
+				String decimalPortion= newTotal.substring(periodOffset+1);
+				if(decimalPortion.length()==0)
+					newTotal +="00";
+				if(decimalPortion.length()==1)
+					newTotal +="0";
+				if(decimalPortion.length()>2)
+				{
+					total += .005;
+					newTotal=String.valueOf(total);
+					periodOffset=newTotal.indexOf(".");
+					newTotal=newTotal.substring(0,periodOffset+3);
+				}
+			}
+			return newTotal;
+
+
 		}
 
 }
