@@ -1,3 +1,4 @@
+import java.util.regex.*;
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -205,14 +206,15 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 		test = test.replaceAll("/ - (\\d)", "/ -$1");
 		System.out.println(test);
 
+		Pattern p = Pattern.compile("r|\\+|\\*|\\^|\\(|/ r|\\+|\\*|\\^|/");
+		Matcher m = p.matcher(test);
+		if (m.find()){
+			throw new IllegalArgumentException("wrong operator");
+		}
+
 		if(test.contains("( +")){
 			System.out.println("operand missing before +");
 			throw new IllegalArgumentException("operand missing before +");
-			//.exit(1);
-		}
-
-		if(test.trim().contains("+ +")){
-			throw new IllegalArgumentException("wrong operator");
 		}
 
 		if((test.trim()==null) || (test.trim().length()==0))
@@ -340,7 +342,6 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 		return cleaned;
 	}
 
-	//added by Kiki
 	public void clear() {
 		accumulatorMode.setSelected(false);
 		expressionMode.setSelected(true);
