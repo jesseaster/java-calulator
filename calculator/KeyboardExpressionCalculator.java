@@ -196,7 +196,9 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 		test = test.replaceAll("/", " / ");
 		test = test.replaceAll("-", " - ");
 		test = test.replaceAll("pi", Pi);
+		test = test.replaceAll("PI", Pi);
 		test = test.replaceAll("e", E); 
+		test = test.replaceAll("E", E); 
 		test = test.replaceAll("^ +| +$|( )+", "$1");
 		test = test.replaceAll("- -", "+");
 		test = test.replaceAll("\\+ - (\\d)", "+ -$1");
@@ -206,7 +208,7 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 		test = test.replaceAll("/ - (\\d)", "/ -$1");
 		System.out.println(test);
 
-		Pattern p = Pattern.compile("r|\\+|\\*|\\^|\\(|/ r|\\+|\\*|\\^|/");
+		Pattern p = Pattern.compile("(r|\\+|\\*|\\^|\\(|/)\\s(r|\\+|\\*|\\^|/)");
 		Matcher m = p.matcher(test);
 		if (m.find()){
 			throw new IllegalArgumentException("wrong operator");
