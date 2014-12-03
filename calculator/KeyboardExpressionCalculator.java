@@ -28,7 +28,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-public class KeyboardExpressionCalculator implements ActionListener, Accumulator
+public class KeyboardExpressionCalculator implements ActionListener, Accumulator, Calculator, Grapher
 {
 
 
@@ -181,8 +181,13 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 		}
 
 	}
+	public void drawGraph(String expression,
+			String xStart,
+			String increment) throws IllegalArgumentException{
 
-	public static String calculate(String infix, String x_value){
+	}
+
+	public String calculate(String infix, String x_value){
 		String Pi = Double.toString(Math.PI);
 		String E = Double.toString(Math.E);
 		String test = infix.replaceAll("\\^", " ^ ");
