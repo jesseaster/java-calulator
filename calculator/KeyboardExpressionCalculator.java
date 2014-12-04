@@ -72,8 +72,8 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 	JRadioButton expressionMode = new JRadioButton("expression mode");
 	JRadioButton graphMode = new JRadioButton("graph mode");
 	ButtonGroup buttonGroup = new ButtonGroup();
-	
-	
+
+
 
 	public KeyboardExpressionCalculator()
 	{
@@ -236,7 +236,7 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 	public void drawGraph(String expression,
 			String xStart,
 			String increment) throws IllegalArgumentException{
-		
+
 
 		double[][] pointsArray;
 		pointsArray = new double[2][10];
@@ -248,29 +248,29 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 			pointsArray[0][i] = xLocation;
 			pointsArray[1][i] = Double.parseDouble(calculate(expression, Double.toString(xLocation)));
 		}
-		
+
 		List<Double> scores = new ArrayList<>();
-        Random random = new Random();
-        int maxDataPoints = 40;
-        int maxScore = 10;
-        for (int i = 0; i < maxDataPoints; i++) {
-            scores.add((double) random.nextDouble() * maxScore);
-//            scores.add((double) i);
-        }
-        
-        String XLocation = Double.toString(xLocation);
-        
-        GraphPanel mainPanel = new GraphPanel(scores);
-        JPanel xyPanel = new JPanel();
-    	JLabel coordinates = new JLabel("X&Y Coordinates", SwingConstants.RIGHT);
-    	JTextArea xyCoordinates = new JTextArea(100,100);
-        mainPanel.setPreferredSize(new Dimension(800, 600));
-        mainPanel.addMouseListener(new MouseAdapter(){
-			public void mousePressed(java.awt.event.MouseEvent evt) {
-			System.out.println(evt.getPoint());
-			}
-			});
-       
+		Random random = new Random();
+		int maxDataPoints = 40;
+		int maxScore = 10;
+		for (int i = 0; i < maxDataPoints; i++) {
+			scores.add((double) random.nextDouble() * maxScore);
+			//            scores.add((double) i);
+		}
+
+		String XLocation = Double.toString(xLocation);
+
+		GraphPanel mainPanel = new GraphPanel(scores);
+		JPanel xyPanel = new JPanel();
+		JLabel coordinates = new JLabel("X&Y Coordinates", SwingConstants.RIGHT);
+		JTextArea xyCoordinates = new JTextArea(100,100);
+		mainPanel.setPreferredSize(new Dimension(800, 600));
+		mainPanel.addMouseListener(new MouseAdapter(){
+				public void mousePressed(java.awt.event.MouseEvent evt) {
+				System.out.println(evt.getPoint());
+				}
+				});
+
 		coordinates.setVisible(true);
 		xyCoordinates.setVisible(true);
 		xyCoordinates.setText("kiki");
@@ -278,10 +278,10 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 		xyPanel.add(coordinates);
 		xyPanel.add(xyCoordinates);
 		/*xyPanel.addMouseListener(new MouseAdapter(){
-				public void mousePressed(java.awt.event.MouseEvent evt) {
-				System.out.println(evt.getPoint());
-				}
-				});*/
+		  public void mousePressed(java.awt.event.MouseEvent evt) {
+		  System.out.println(evt.getPoint());
+		  }
+		  });*/
 		JFrame  window = new JFrame(expression);
 		window.getContentPane().add(mainPanel,"North");
 		window.getContentPane().add(xyPanel,"South");
