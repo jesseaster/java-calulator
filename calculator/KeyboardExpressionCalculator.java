@@ -1,3 +1,4 @@
+import java.util.regex.*;
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -27,7 +28,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-public class KeyboardExpressionCalculator implements ActionListener, Accumulator
+public class KeyboardExpressionCalculator implements ActionListener, Accumulator, Calculator, Grapher
 {
 
 
@@ -47,9 +48,11 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 	JLabel amountLabel = new JLabel("Enter", SwingConstants.RIGHT);
 	JLabel totalLabel = new JLabel("Total", SwingConstants.RIGHT);
 	JLabel xLabel = new JLabel("X value", SwingConstants.RIGHT);
+	JLabel incrementLabel = new JLabel("Increment value", SwingConstants.RIGHT);
 	JTextField amountTextField = new JTextField(8);
 	JTextField totalTextField = new JTextField(8);
 	JTextField xValue = new JTextField(8);
+	JTextField incrementValue = new JTextField(8);
 	JPanel panel = new JPanel();
 	JTextField errorTextField = new JTextField(32);
 	JCheckBox checkBox= new JCheckBox("Drop.00");
@@ -75,6 +78,8 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 		panel.add(amountTextField);
 		panel.add(xLabel);
 		panel.add(xValue);
+		panel.add(incrementLabel);
+		panel.add(incrementValue);
 		panel.add(totalLabel);
 		panel.add(totalTextField);
 		window.getContentPane().add(panel,"North");
@@ -85,6 +90,7 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 		totalTextField.setEditable(false);
 		expressionMode.setSelected(true);
 		xValue.setEditable(true);
+		incrementValue.setEditable(false);
 		amountTextField.setEditable(true);
 		//totalTextField.setFont(new Font("Times Roman", Font.BOLD, 20));
 		clearButton.addActionListener(this);
@@ -93,6 +99,7 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 		graphMode.addActionListener(this);
 		amountTextField.addActionListener(this);
 		xValue.addActionListener(this);
+		incrementValue.addActionListener(this);
 		window.getContentPane().add(errorTextField, "South");
 		window.getContentPane().add(logScrollPane, "Center");
 		errorTextField.setEditable(false);
@@ -120,6 +127,7 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 		if(accumulatorMode.isSelected() == true)
 		{
 			xValue.setEditable(false);
+			incrementValue.setEditable(false);
 			if(ae.getSource()== amountTextField)
 			{
 				try{
@@ -146,6 +154,7 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 		if(expressionMode.isSelected() == true)
 		{	
 			xValue.setEditable(true);
+			incrementValue.setEditable(false);
 			if(ae.getSource() == amountTextField  || ae.getSource() == xValue)
 			{
 
@@ -155,7 +164,7 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 					expression = amountTextField.getText();
 					x_value = xValue.getText();
 					System.out.println(expression);
-					String newTotal= Shunting(expression, x_value);
+					String newTotal= calculate(expression, x_value);
 					totalTextField.setText(newTotal);
 					errorTextField.setText("");
 					errorTextField.setBackground(Color.white);
@@ -174,9 +183,58 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 			}
 		}
 
+		if(graphMode.isSelected() == true)
+		{	
+			xValue.setEditable(true);
+			incrementValue.setEditable(true);
+			if(ae.getSource() == amountTextField  || ae.getSource() == xValue || ae.getSource() == incrementValue)
+			{
+				String expression = null;
+				String x_value = null;
+				String increment = null;
+				try {
+					expression = amountTextField.getText();
+					x_value = xValue.getText();
+					increment = incrementValue.getText();
+					System.out.println(expression + ", " + x_value + ", " +  increment);
+					drawGraph(expression, x_value, increment);
+					totalTextField.setText("");
+					errorTextField.setText("");
+					errorTextField.setBackground(Color.white);
+					logTextArea.append(newLine+expression);
+					logTextArea.setCaretPosition(logTextArea.getDocument().getLength());
+					amountTextField.setText("");
+					xValue.setText("");
+					incrementValue.setText("");
+					amountTextField.requestFocus();
+				} catch(IllegalArgumentException iae)
+				{
+					errorTextField.setText(iae.getMessage());
+					errorTextField.setBackground(Color.pink);
+				}
+				catch(NoSuchElementException nsee)
+				{
+					errorTextField.setText(nsee.getMessage());
+					errorTextField.setBackground(Color.pink);
+				}
+			}
+		}
 	}
 
-	public static String Shunting(String infix, String x_value){
+	public void drawGraph(String expression,
+			String xStart,
+			String increment) throws IllegalArgumentException{
+
+		JFrame  window = new JFrame(expression);
+		JPanel panel = new JPanel();
+		window.getContentPane().add(panel,"North");
+		window.setSize(400, 500);
+		window.setLocation(700,200);
+		window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		window.setVisible(true);
+	}
+
+	public String calculate(String infix, String x_value){
 		String Pi = Double.toString(Math.PI);
 		String E = Double.toString(Math.E);
 		String test = infix.replaceAll("\\^", " ^ ");
@@ -190,7 +248,9 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 		test = test.replaceAll("/", " / ");
 		test = test.replaceAll("-", " - ");
 		test = test.replaceAll("pi", Pi);
+		test = test.replaceAll("PI", Pi);
 		test = test.replaceAll("e", E); 
+		test = test.replaceAll("E", E); 
 		test = test.replaceAll("^ +| +$|( )+", "$1");
 		test = test.replaceAll("- -", "+");
 		test = test.replaceAll("\\+ - (\\d)", "+ -$1");
@@ -200,19 +260,20 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 		test = test.replaceAll("/ - (\\d)", "/ -$1");
 		System.out.println(test);
 
+		Pattern p = Pattern.compile("(r|\\+|\\*|\\^|\\(|/)\\s(r|\\+|\\*|\\^|/)");
+		Matcher m = p.matcher(test);
+		if (m.find()){
+			throw new IllegalArgumentException("wrong operator");
+		}
+
 		if(test.contains("( +")){
 			System.out.println("operand missing before +");
 			throw new IllegalArgumentException("operand missing before +");
-			//.exit(1);
 		}
-		
-		if(test.trim().contains("++")){
-			throw new IllegalArgumentException("wrong operator");
-		}
-		
+
 		if((test.trim()==null) || (test.trim().length()==0))
 			throw new IllegalArgumentException("Expression is null or zero length.");
-		
+
 		if((test.trim().contains("x"))&& x_value == null)
 			throw new IllegalArgumentException("x value not entered");
 
@@ -315,7 +376,7 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 				double firstOperand = stack.pop();
 				stack.push(Math.pow(firstOperand, 1.0 / secondOperand));
 			}
-			
+
 			else{//just in case
 				System.out.println("Error");
 				throw new IllegalArgumentException("Syntax error");
@@ -328,23 +389,27 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 
 	private static String cleanExpr(String expr){
 		//remove all non-operators, non-whitespace, and non digit chars
-		return expr.replaceAll("[^.^r^\\^\\*\\+\\-\\d/\\s]", "");
+		String cleaned = expr.replaceAll("[^.^r^\\^\\*\\+\\-\\d/\\s]", "");
+		if (!cleaned.equals(expr)){
+			throw new IllegalArgumentException("Amount must be numeric");
+		}
+		return cleaned;
 	}
 
-	//added by Kiki
 	public void clear() {
 		accumulatorMode.setSelected(false);
 		expressionMode.setSelected(true);
 		graphMode.setSelected(false);
 		amountTextField.setText("");
 		xValue.setText("");
+		incrementValue.setText("");
 		totalTextField.setText("");
 		amountTextField.setEditable(true);
 		amountTextField.requestFocus();
 
 	}
-	
-	
+
+
 	public void actionListener(ActionEvent ae){
 
 	}
@@ -352,52 +417,52 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 	@Override
 		public String accumulate(String amount) throws IllegalArgumentException {
 
-		amount=amount.trim();
-		if((amount==null) || (amount.length()==0))
-			throw new IllegalArgumentException("Amount parameter is null or zero length.");
-		if(amount.startsWith("/") || amount.startsWith("x") || amount.startsWith("*"))
-			throw new IllegalArgumentException( "Only add an subtract operations are supported in accumulator mode.");
-		if(amount.startsWith("+ ")|| amount.startsWith("- "))
-			amount=amount.substring(0,1)+amount.substring(1).trim();
-		if(amount.startsWith("0"))
-			throw new IllegalArgumentException("Amount must not begin with a zero");
-		if(amount.contains("."))
-		{
-			int periodOffset=amount.indexOf(".");
-			String decimalPortion = amount.substring(periodOffset+1);
-			if(decimalPortion.length()!=2)
-				throw new IllegalArgumentException("A decimal point must be followed by 2 decimal digits.");
-		}
-		double amount1;
-	    try {
-	        amount1 = Double.parseDouble(amount);
-	        }
-	    catch(NumberFormatException nfe)
-	        {
-	        throw new IllegalArgumentException("Amount must be numeric");
-	        }
-	    
-		total=total+amount1;
-		String newTotal = String.valueOf(total);
-		if(newTotal.contains("."))
-		{
-			int periodOffset= newTotal.indexOf(".");
-			String decimalPortion= newTotal.substring(periodOffset+1);
-			if(decimalPortion.length()==0)
-				newTotal +="00";
-			if(decimalPortion.length()==1)
-				newTotal +="0";
-			if(decimalPortion.length()>2)
+			amount=amount.trim();
+			if((amount==null) || (amount.length()==0))
+				throw new IllegalArgumentException("Amount parameter is null or zero length.");
+			if(amount.startsWith("/") || amount.startsWith("x") || amount.startsWith("*"))
+				throw new IllegalArgumentException( "Only add an subtract operations are supported in accumulator mode.");
+			if(amount.startsWith("+ ")|| amount.startsWith("- "))
+				amount=amount.substring(0,1)+amount.substring(1).trim();
+			if(amount.startsWith("0"))
+				throw new IllegalArgumentException("Amount must not begin with a zero");
+			if(amount.contains("."))
 			{
-				total += .005;
-				newTotal=String.valueOf(total);
-				periodOffset=newTotal.indexOf(".");
-				newTotal=newTotal.substring(0,periodOffset+3);
+				int periodOffset=amount.indexOf(".");
+				String decimalPortion = amount.substring(periodOffset+1);
+				if(decimalPortion.length()!=2)
+					throw new IllegalArgumentException("A decimal point must be followed by 2 decimal digits.");
 			}
-		}
-		return newTotal;
-		
-		
+			double amount1;
+			try {
+				amount1 = Double.parseDouble(amount);
+			}
+			catch(NumberFormatException nfe)
+			{
+				throw new IllegalArgumentException("Amount must be numeric");
+			}
+
+			total=total+amount1;
+			String newTotal = String.valueOf(total);
+			if(newTotal.contains("."))
+			{
+				int periodOffset= newTotal.indexOf(".");
+				String decimalPortion= newTotal.substring(periodOffset+1);
+				if(decimalPortion.length()==0)
+					newTotal +="00";
+				if(decimalPortion.length()==1)
+					newTotal +="0";
+				if(decimalPortion.length()>2)
+				{
+					total += .005;
+					newTotal=String.valueOf(total);
+					periodOffset=newTotal.indexOf(".");
+					newTotal=newTotal.substring(0,periodOffset+3);
+				}
+			}
+			return newTotal;
+
+
 		}
 
 }
