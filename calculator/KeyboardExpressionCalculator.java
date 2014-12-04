@@ -192,9 +192,8 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 		{	
 			xValue.setEditable(true);
 			incrementValue.setEditable(true);
-			if(ae.getSource() == amountTextField  || ae.getSource() == xValue)
+			if(ae.getSource() == amountTextField  || ae.getSource() == xValue || ae.getSource() == incrementValue)
 			{
-
 				String expression = null;
 				String x_value = null;
 				String increment = null;
@@ -231,6 +230,13 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 			String xStart,
 			String increment) throws IllegalArgumentException{
 
+		JFrame  window = new JFrame(expression);
+		JPanel panel = new JPanel();
+		window.getContentPane().add(panel,"North");
+		window.setSize(400, 500);
+		window.setLocation(700,200);
+		window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		window.setVisible(true);
 	}
 
 	public String calculate(String infix, String x_value){
