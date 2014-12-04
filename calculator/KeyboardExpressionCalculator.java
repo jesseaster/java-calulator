@@ -27,6 +27,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.Point;
+import java.util.Arrays;
 
 public class KeyboardExpressionCalculator implements ActionListener, Accumulator, Calculator, Grapher
 {
@@ -88,9 +92,10 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.setVisible(true);
 		totalTextField.setEditable(false);
-		expressionMode.setSelected(true);
+		expressionMode.setSelected(false);
+		graphMode.setSelected(true);
 		xValue.setEditable(true);
-		incrementValue.setEditable(false);
+		incrementValue.setEditable(true);
 		amountTextField.setEditable(true);
 		//totalTextField.setFont(new Font("Times Roman", Font.BOLD, 20));
 		clearButton.addActionListener(this);
@@ -227,11 +232,33 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 
 		JFrame  window = new JFrame(expression);
 		JPanel panel = new JPanel();
+		panel.addMouseListener(new MouseAdapter(){
+				public void mousePressed(java.awt.event.MouseEvent evt) {
+				System.out.println(evt.getPoint());
+				}
+				});
 		window.getContentPane().add(panel,"North");
 		window.setSize(400, 500);
 		window.setLocation(700,200);
 		window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		window.setVisible(true);
+		panel.setBackground(Color.black);
+
+		double[][] pointsArray;
+		pointsArray = new double[2][10];
+		double dxStart = Double.parseDouble(xStart);
+		double dIncrement = Double.parseDouble(increment);
+		double xLocation = 0;
+		for(int i = 0; i<10; i++){
+			xLocation = dxStart + dIncrement*i;
+			pointsArray[0][i] = xLocation;
+			pointsArray[1][i] = Double.parseDouble(calculate(expression, Double.toString(xLocation)));
+		}
+
+		System.out.print("\n");
+		for(int i = 0; i<10; i++){
+			System.out.print(pointsArray[0][i] + ", " + pointsArray[1][i] + "\n");
+		}
 	}
 
 	public String calculate(String infix, String x_value){
