@@ -1,5 +1,6 @@
 import java.util.regex.*;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -7,8 +8,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.Math;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Random;
 import java.util.Stack;
 import java.util.EmptyStackException;
 import java.io.*;
@@ -27,6 +31,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.Point;
@@ -67,6 +72,8 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 	JRadioButton expressionMode = new JRadioButton("expression mode");
 	JRadioButton graphMode = new JRadioButton("graph mode");
 	ButtonGroup buttonGroup = new ButtonGroup();
+	
+	
 
 	public KeyboardExpressionCalculator()
 	{
@@ -229,20 +236,7 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 	public void drawGraph(String expression,
 			String xStart,
 			String increment) throws IllegalArgumentException{
-
-		JFrame  window = new JFrame(expression);
-		JPanel panel = new JPanel();
-		panel.addMouseListener(new MouseAdapter(){
-				public void mousePressed(java.awt.event.MouseEvent evt) {
-				System.out.println(evt.getPoint());
-				}
-				});
-		window.getContentPane().add(panel,"North");
-		window.setSize(400, 500);
-		window.setLocation(700,200);
-		window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		window.setVisible(true);
-		panel.setBackground(Color.black);
+		
 
 		double[][] pointsArray;
 		pointsArray = new double[2][10];
@@ -254,7 +248,49 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 			pointsArray[0][i] = xLocation;
 			pointsArray[1][i] = Double.parseDouble(calculate(expression, Double.toString(xLocation)));
 		}
-
+		
+		List<Double> scores = new ArrayList<>();
+        Random random = new Random();
+        int maxDataPoints = 40;
+        int maxScore = 10;
+        for (int i = 0; i < maxDataPoints; i++) {
+            scores.add((double) random.nextDouble() * maxScore);
+//            scores.add((double) i);
+        }
+        
+        String XLocation = Double.toString(xLocation);
+        
+        GraphPanel mainPanel = new GraphPanel(scores);
+        JPanel xyPanel = new JPanel();
+    	JLabel coordinates = new JLabel("X&Y Coordinates", SwingConstants.RIGHT);
+    	JTextArea xyCoordinates = new JTextArea(100,100);
+        mainPanel.setPreferredSize(new Dimension(800, 600));
+        mainPanel.addMouseListener(new MouseAdapter(){
+			public void mousePressed(java.awt.event.MouseEvent evt) {
+			System.out.println(evt.getPoint());
+			}
+			});
+       
+		coordinates.setVisible(true);
+		xyCoordinates.setVisible(true);
+		xyCoordinates.setText("kiki");
+		xyPanel.setLayout(new GridLayout(2,1));
+		xyPanel.add(coordinates);
+		xyPanel.add(xyCoordinates);
+		/*xyPanel.addMouseListener(new MouseAdapter(){
+				public void mousePressed(java.awt.event.MouseEvent evt) {
+				System.out.println(evt.getPoint());
+				}
+				});*/
+		JFrame  window = new JFrame(expression);
+		window.getContentPane().add(mainPanel,"North");
+		window.getContentPane().add(xyPanel,"South");
+		//window.setSize(600, 500);
+		window.pack();
+		window.setLocation(700,200);
+		window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		window.setVisible(true);
+		xyPanel.setBackground(Color.black);
 		System.out.print("\n");
 		for(int i = 0; i<10; i++){
 			System.out.print(pointsArray[0][i] + ", " + pointsArray[1][i] + "\n");
