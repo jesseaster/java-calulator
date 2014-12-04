@@ -169,11 +169,6 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 					errorTextField.setText(iae.getMessage());
 					errorTextField.setBackground(Color.pink);
 				}
-				catch(NoSuchElementException nsee)
-				{
-					errorTextField.setText(nsee.getMessage());
-					errorTextField.setBackground(Color.pink);
-				}
 
 
 			}
@@ -219,7 +214,7 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 			throw new IllegalArgumentException("Expression is null or zero length.");
 		
 		if((test.trim().contains("x"))&& x_value == null)
-			throw new NoSuchElementException("x value not entered");
+			throw new IllegalArgumentException("x value not entered");
 
 		System.out.printf("infix:   %s%n", test);
 		System.out.printf("postfix: %s%n", infixToPostfix(test));
