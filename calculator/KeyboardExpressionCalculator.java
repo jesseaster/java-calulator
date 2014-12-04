@@ -48,9 +48,11 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 	JLabel amountLabel = new JLabel("Enter", SwingConstants.RIGHT);
 	JLabel totalLabel = new JLabel("Total", SwingConstants.RIGHT);
 	JLabel xLabel = new JLabel("X value", SwingConstants.RIGHT);
+	JLabel incrementLabel = new JLabel("Increment value", SwingConstants.RIGHT);
 	JTextField amountTextField = new JTextField(8);
 	JTextField totalTextField = new JTextField(8);
 	JTextField xValue = new JTextField(8);
+	JTextField incrementValue = new JTextField(8);
 	JPanel panel = new JPanel();
 	JTextField errorTextField = new JTextField(32);
 	JCheckBox checkBox= new JCheckBox("Drop.00");
@@ -76,6 +78,8 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 		panel.add(amountTextField);
 		panel.add(xLabel);
 		panel.add(xValue);
+		panel.add(incrementLabel);
+		panel.add(incrementValue);
 		panel.add(totalLabel);
 		panel.add(totalTextField);
 		window.getContentPane().add(panel,"North");
@@ -86,6 +90,7 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 		totalTextField.setEditable(false);
 		expressionMode.setSelected(true);
 		xValue.setEditable(true);
+		incrementValue.setEditable(false);
 		amountTextField.setEditable(true);
 		//totalTextField.setFont(new Font("Times Roman", Font.BOLD, 20));
 		clearButton.addActionListener(this);
@@ -94,6 +99,7 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 		graphMode.addActionListener(this);
 		amountTextField.addActionListener(this);
 		xValue.addActionListener(this);
+		incrementValue.addActionListener(this);
 		window.getContentPane().add(errorTextField, "South");
 		window.getContentPane().add(logScrollPane, "Center");
 		errorTextField.setEditable(false);
@@ -121,6 +127,7 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 		if(accumulatorMode.isSelected() == true)
 		{
 			xValue.setEditable(false);
+			incrementValue.setEditable(false);
 			if(ae.getSource()== amountTextField)
 			{
 				try{
@@ -147,6 +154,7 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 		if(expressionMode.isSelected() == true)
 		{	
 			xValue.setEditable(true);
+			incrementValue.setEditable(false);
 			if(ae.getSource() == amountTextField  || ae.getSource() == xValue)
 			{
 
@@ -180,7 +188,45 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 			}
 		}
 
+		if(graphMode.isSelected() == true)
+		{	
+			xValue.setEditable(true);
+			incrementValue.setEditable(true);
+			if(ae.getSource() == amountTextField  || ae.getSource() == xValue)
+			{
+
+				String expression = null;
+				String x_value = null;
+				String increment = null;
+				try {
+					expression = amountTextField.getText();
+					x_value = xValue.getText();
+					increment = incrementValue.getText();
+					System.out.println(expression + ", " + x_value + ", " +  increment);
+					drawGraph(expression, x_value, increment);
+					totalTextField.setText("");
+					errorTextField.setText("");
+					errorTextField.setBackground(Color.white);
+					logTextArea.append(newLine+expression);
+					logTextArea.setCaretPosition(logTextArea.getDocument().getLength());
+					amountTextField.setText("");
+					xValue.setText("");
+					incrementValue.setText("");
+					amountTextField.requestFocus();
+				} catch(IllegalArgumentException iae)
+				{
+					errorTextField.setText(iae.getMessage());
+					errorTextField.setBackground(Color.pink);
+				}
+				catch(NoSuchElementException nsee)
+				{
+					errorTextField.setText(nsee.getMessage());
+					errorTextField.setBackground(Color.pink);
+				}
+			}
+		}
 	}
+
 	public void drawGraph(String expression,
 			String xStart,
 			String increment) throws IllegalArgumentException{
@@ -355,6 +401,7 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 		graphMode.setSelected(false);
 		amountTextField.setText("");
 		xValue.setText("");
+		incrementValue.setText("");
 		totalTextField.setText("");
 		amountTextField.setEditable(true);
 		amountTextField.requestFocus();
