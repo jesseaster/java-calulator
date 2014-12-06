@@ -31,7 +31,7 @@ public class GraphPanel extends JPanel implements MouseListener{
 	public void mouseClicked(MouseEvent me){}
 	public void mouseEntered(MouseEvent me){}
 	public void mouseExited(MouseEvent  me){}
-	private static KeyboardExpressionCalculator calc;
+	//private static KeyboardExpressionCalculator calc;
 	private int width = 800;
 	private int heigth = 400;
 	private int padding = 25;
@@ -56,7 +56,7 @@ public class GraphPanel extends JPanel implements MouseListener{
 	private double xClick;
 	private double xScale;
 
-	public GraphPanel(String expression, double[] xValues, double[] yValues) {
+	public GraphPanel(String expression, double[] xValues, double[] yValues) throws IllegalArgumentException {
 		this.expression = expression;
 		this.xValues = xValues;
 		this.yValues = yValues;
@@ -183,37 +183,37 @@ public class GraphPanel extends JPanel implements MouseListener{
 		return max;
 	}
 
-	private static void createAndShowGui() {
-		double[] xValues;
-		double[] yValues;
-		xValues = new double[10];
-		yValues = new double[10];
-		String xStart = "0";
-		String increment = "1";
-		String expression = "x";
-		double dxStart = Double.parseDouble(xStart);
-		double dIncrement = Double.parseDouble(increment);
-		double xLocation;
-		for(int i = 0; i<10; i++){
-			xLocation = dxStart + dIncrement*i;
-			xValues[i] = xLocation;
-			yValues[i] = i;//Double.parseDouble(calculate(expression, Double.toString(xLocation)));
-		}
-		GraphPanel mainPanel = new GraphPanel(expression, xValues, yValues);
-		mainPanel.setPreferredSize(new Dimension(800, 600));
-		JFrame frame = new JFrame(expression);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.getContentPane().add(mainPanel);
-		frame.pack();
-		frame.setLocationRelativeTo(null);
-		frame.setVisible(true);
-	}
+	//private static void createAndShowGui() {
+	//	double[] xValues;
+	//	double[] yValues;
+	//	xValues = new double[10];
+	//	yValues = new double[10];
+	//	String xStart = "0";
+	//	String increment = "1";
+	//	String expression = "x";
+	//	double dxStart = Double.parseDouble(xStart);
+	//	double dIncrement = Double.parseDouble(increment);
+	//	double xLocation;
+	//	for(int i = 0; i<10; i++){
+	//		xLocation = dxStart + dIncrement*i;
+	//		xValues[i] = xLocation;
+	//		yValues[i] = i;//Double.parseDouble(calculate(expression, Double.toString(xLocation)));
+	//	}
+	//	GraphPanel mainPanel = new GraphPanel(expression, xValues, yValues);
+	//	mainPanel.setPreferredSize(new Dimension(800, 600));
+	//	JFrame frame = new JFrame(expression);
+	//	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	//	frame.getContentPane().add(mainPanel);
+	//	frame.pack();
+	//	frame.setLocationRelativeTo(null);
+	//	frame.setVisible(true);
+	//}
 
-	public static void main(String[] args) {
-		SwingUtilities.invokeLater(new Runnable() {
-				public void run() {
-				createAndShowGui();
-				}
-				});
-	}
+	//public static void main(String[] args) {
+	//	SwingUtilities.invokeLater(new Runnable() {
+	//			public void run() {
+	//			createAndShowGui();
+	//			}
+	//			});
+	//}
 }

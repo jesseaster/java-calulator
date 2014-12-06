@@ -31,9 +31,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseAdapter;
 import java.awt.Point;
 import java.util.Arrays;
 
@@ -104,7 +101,6 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 		xValue.setEditable(true);
 		incrementValue.setEditable(true);
 		amountTextField.setEditable(true);
-		//totalTextField.setFont(new Font("Times Roman", Font.BOLD, 20));
 		clearButton.addActionListener(this);
 		expressionMode.addActionListener(this);
 		accumulatorMode.addActionListener(this);
@@ -116,7 +112,6 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 		window.getContentPane().add(logScrollPane, "Center");
 		errorTextField.setEditable(false);
 		logTextArea.setEditable(false);
-		//logTextArea.setFont(new Font("Times Roman", Font.BOLD, 20));
 		amountTextField.requestFocus();
 	}
 
@@ -256,11 +251,6 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 		JLabel coordinates = new JLabel("X&Y Coordinates", SwingConstants.RIGHT);
 		JTextField xyCoordinates = new JTextField();
 		mainPanel.setPreferredSize(new Dimension(800, 600));
-		mainPanel.addMouseListener(new MouseAdapter(){
-				public void mousePressed(java.awt.event.MouseEvent evt) {
-				System.out.println(evt.getPoint());
-				}
-				});
 		xyCoordinates.setText(xValues[i] + ", " + yValues[i] + "\n");
 		coordinates.setVisible(true);
 		xyCoordinates.setVisible(true);
