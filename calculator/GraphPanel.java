@@ -56,7 +56,7 @@ public class GraphPanel extends JPanel implements MouseListener{
 	private double xClick;
 	private double xScale;
 
-	public GraphPanel(String expression, double[] xValues, double[] yValues) throws IllegalArgumentException {
+	public GraphPanel(String expression, double[] xValues, double[] yValues, Calculator calculatorProgram) throws IllegalArgumentException {
 		this.expression = expression;
 		this.xValues = xValues;
 		this.yValues = yValues;

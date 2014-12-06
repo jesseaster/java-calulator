@@ -246,7 +246,7 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 			yValues[i] = Double.parseDouble(calculate(expression, Double.toString(xLocation)));
 		}
 
-		GraphPanel mainPanel = new GraphPanel(expression, xValues, yValues);
+		GraphPanel mainPanel = new GraphPanel(expression, xValues, yValues, new KeyboardExpressionCalculator());
 		JPanel xyPanel = new JPanel();
 		JLabel coordinates = new JLabel("X&Y Coordinates", SwingConstants.RIGHT);
 		JTextField xyCoordinates = new JTextField();
