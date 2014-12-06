@@ -21,7 +21,11 @@ import java.awt.event.MouseListener;
 public class GraphPanel extends JPanel implements MouseListener{
 	public void mousePressed(MouseEvent me)
 	{
-		System.out.println("heeefew");
+		Point clickPoint = me.getPoint();
+		//System.out.println(clickPoint.x);
+		//System.out.println(max);
+		xClick = (clickPoint.x - padding -labelPadding)/xScale + getMinValue(xValues);
+		System.out.println(xClick);
 	}
 	public void mouseReleased(MouseEvent me){}
 	public void mouseClicked(MouseEvent me){}
@@ -41,7 +45,16 @@ public class GraphPanel extends JPanel implements MouseListener{
 	private String expression;
 	private double[] xValues;
 	private double[] yValues;
-
+	private double min;
+	private double max;
+	private double range;
+	private int exponent;
+	private double yrange;
+	private double ymin;
+	private double ymax;
+	private double count;
+	private double xClick;
+	private double xScale;
 
 	public GraphPanel(String expression, double[] xValues, double[] yValues) {
 		this.expression = expression;
@@ -53,14 +66,8 @@ public class GraphPanel extends JPanel implements MouseListener{
 	@Override
 		protected void paintComponent(Graphics g) {
 			super.paintComponent(g);
-			double min = getMinValue(yValues);
-			double max = getMaxValue(yValues);
-			double range;
-			int exponent;
-			double yrange;
-			double ymin;
-			double ymax;
-			double count;
+			min = getMinValue(yValues);
+			max = getMaxValue(yValues);
 			range = max - min;
 			exponent = (int)Math.ceil(Math.log10(range));
 			yrange = (Math.pow(10, exponent));
@@ -76,7 +83,7 @@ public class GraphPanel extends JPanel implements MouseListener{
 			Graphics2D g2 = (Graphics2D) g;
 			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-			double xScale = ((double) getWidth() - (2 * padding) - labelPadding) / (getMaxValue(xValues) - getMinValue(xValues));
+			xScale = ((double) getWidth() - (2 * padding) - labelPadding) / (getMaxValue(xValues) - getMinValue(xValues));
 			double yScale = ((double) getHeight() - (2 * padding) - labelPadding) / (yrange);
 
 			List<Point> graphPoints = new ArrayList<>();
