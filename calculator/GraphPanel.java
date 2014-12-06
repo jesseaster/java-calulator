@@ -10,24 +10,40 @@ import java.awt.Stroke;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+
 import java.util.Arrays;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseListener;
 
 public class GraphPanel extends JPanel implements MouseListener{
+	JFrame miniXYdisplayWindow = new JFrame("XY coordinates");
+	JTextField xTextField = new JTextField();
+	JTextField yTextField = new JTextField();
 	public void mousePressed(MouseEvent me)
 	{
 		Point clickPoint = me.getPoint();
 		//System.out.println(clickPoint.x);
 		//System.out.println(max);
 		xClick = (clickPoint.x - padding -labelPadding)/xScale + getMinValue(xValues);
+		String xClickString = String.valueOf(xClick);
+		xTextField.setText("X = "+ xClickString);
 		System.out.println(xClick);
+
+	    // show mini x,y display window
+	    miniXYdisplayWindow.setLocation(me.getX(), me.getY());
+	    miniXYdisplayWindow.setSize(200, 200);
+	    miniXYdisplayWindow.setVisible(true); 
 	}
-	public void mouseReleased(MouseEvent me){}
+	public void mouseReleased(MouseEvent me){
+		// "erase" mini x,y display window	
+	    miniXYdisplayWindow.setVisible(false);
+	}
 	public void mouseClicked(MouseEvent me){}
 	public void mouseEntered(MouseEvent me){}
 	public void mouseExited(MouseEvent  me){}
@@ -61,6 +77,21 @@ public class GraphPanel extends JPanel implements MouseListener{
 		this.xValues = xValues;
 		this.yValues = yValues;
 		addMouseListener(this);
+		if(xValues.length != yValues.length)
+        	throw new IllegalArgumentException("Array sizes must be the same!");
+        // 2 Verify x increment is positive
+        //if(increment<=0)
+        	//throw new IllegalArgumentException("Increment must be positive!");
+     // 3 Save Calculator address for call back
+     // 4 Save expression for call back
+     // 5 Register (with parent JPanel) as MouseListener
+        // 6 Calculate Y scale values (and save them) 
+        // 7 Build miniXYdisplayWindow (reuse for each mouse click!)
+		miniXYdisplayWindow.add(xTextField);
+		miniXYdisplayWindow.add(yTextField);
+		miniXYdisplayWindow.addMouseListener(this);
+		xTextField.addMouseListener(this);
+		yTextField.addMouseListener(this);
 	}
 
 	@Override
