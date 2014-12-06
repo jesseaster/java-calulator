@@ -31,9 +31,12 @@ public class GraphPanel extends JPanel implements MouseListener{
 		//System.out.println(clickPoint.x);
 		//System.out.println(max);
 		xClick = (clickPoint.x - padding -labelPadding)/xScale + getMinValue(xValues);
-		String xClickString = String.valueOf(xClick);
+		yClick = calc.calculate(expression, Double.toString(xClick));
+		xClickString = String.valueOf(xClick);
 		xTextField.setText("X = "+ xClickString);
+		yTextField.setText("Y = "+ yClick);
 		System.out.println(xClick);
+		System.out.println(yClick);
 
 	    // show mini x,y display window
 	    miniXYdisplayWindow.setLocation(me.getX(), me.getY());
@@ -61,6 +64,7 @@ public class GraphPanel extends JPanel implements MouseListener{
 	private String expression;
 	private double[] xValues;
 	private double[] yValues;
+	private Calculator calc;
 	private double min;
 	private double max;
 	private double range;
@@ -70,12 +74,15 @@ public class GraphPanel extends JPanel implements MouseListener{
 	private double ymax;
 	private double count;
 	private double xClick;
+	private String xClickString;
+	private String yClick;
 	private double xScale;
 
-	public GraphPanel(String expression, double[] xValues, double[] yValues, Calculator calculatorProgram) throws IllegalArgumentException {
+	public GraphPanel(String expression, double[] xValues, double[] yValues, Calculator calc) throws IllegalArgumentException {
 		this.expression = expression;
 		this.xValues = xValues;
 		this.yValues = yValues;
+		this.calc = calc;
 		addMouseListener(this);
 		if(xValues.length != yValues.length)
         	throw new IllegalArgumentException("Array sizes must be the same!");
