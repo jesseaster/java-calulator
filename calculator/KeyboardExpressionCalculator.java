@@ -254,17 +254,17 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 		GraphPanel mainPanel = new GraphPanel(expression, xValues, yValues);
 		JPanel xyPanel = new JPanel();
 		JLabel coordinates = new JLabel("X&Y Coordinates", SwingConstants.RIGHT);
-		JTextArea xyCoordinates = new JTextArea(100,100);
+		JTextField xyCoordinates = new JTextField();
 		mainPanel.setPreferredSize(new Dimension(800, 600));
 		mainPanel.addMouseListener(new MouseAdapter(){
 				public void mousePressed(java.awt.event.MouseEvent evt) {
 				System.out.println(evt.getPoint());
 				}
 				});
-
+		xyCoordinates.setText(xValues[i] + ", " + yValues[i] + "\n");
 		coordinates.setVisible(true);
 		xyCoordinates.setVisible(true);
-		xyCoordinates.setText("kiki");
+		xyCoordinates.setEditable(false);
 		xyPanel.setLayout(new GridLayout(2,1));
 		xyPanel.add(coordinates);
 		xyPanel.add(xyCoordinates);
@@ -279,6 +279,8 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 		System.out.print("\n");
 		for(int i = 0; i<10; i++){
 			System.out.print(xValues[i] + ", " + yValues[i] + "\n");
+			
+			
 		}
 	}
 
