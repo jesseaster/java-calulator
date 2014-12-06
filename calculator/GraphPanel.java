@@ -25,6 +25,7 @@ public class GraphPanel extends JPanel implements MouseListener{
 	JFrame miniXYdisplayWindow = new JFrame("XY coordinates");
 	JTextField xTextField = new JTextField();
 	JTextField yTextField = new JTextField();
+	JPanel panel = new JPanel();
 	public void mousePressed(MouseEvent me)
 	{
 		Point clickPoint = me.getPoint();
@@ -34,7 +35,9 @@ public class GraphPanel extends JPanel implements MouseListener{
 		yClick = calc.calculate(expression, Double.toString(xClick));
 		xClickString = String.valueOf(xClick);
 		xTextField.setText("X = "+ xClickString);
+		xTextField.setEditable(false);
 		yTextField.setText("Y = "+ yClick);
+		yTextField.setEditable(false);
 		System.out.println(xClick);
 		System.out.println(yClick);
 
@@ -94,8 +97,9 @@ public class GraphPanel extends JPanel implements MouseListener{
      // 5 Register (with parent JPanel) as MouseListener
         // 6 Calculate Y scale values (and save them) 
         // 7 Build miniXYdisplayWindow (reuse for each mouse click!)
-		miniXYdisplayWindow.add(xTextField);
-		miniXYdisplayWindow.add(yTextField);
+		panel.add(xTextField);
+		panel.add(yTextField);
+		miniXYdisplayWindow.getContentPane().add(panel,"Center");
 		miniXYdisplayWindow.addMouseListener(this);
 		xTextField.addMouseListener(this);
 		yTextField.addMouseListener(this);

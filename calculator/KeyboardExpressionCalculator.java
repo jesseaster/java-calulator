@@ -19,7 +19,6 @@ import java.io.*;
 import java.lang.String;
 import java.lang.StringIndexOutOfBoundsException;
 import java.lang.Math;
-
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
