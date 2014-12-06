@@ -14,8 +14,19 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import java.util.Arrays;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseListener;
 
-public class GraphPanel extends JPanel {
+public class GraphPanel extends JPanel implements MouseListener{
+	public void mousePressed(MouseEvent me)
+    {
+		System.out.println("heeefew");
+	}
+	public void mouseReleased(MouseEvent me){}
+	public void mouseClicked(MouseEvent me){}
+	public void mouseEntered(MouseEvent me){}
+	public void mouseExited(MouseEvent  me){}
 	private static KeyboardExpressionCalculator calc;
 	private int width = 800;
 	private int heigth = 400;
