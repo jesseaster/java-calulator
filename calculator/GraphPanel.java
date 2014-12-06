@@ -20,7 +20,7 @@ import java.awt.event.MouseListener;
 
 public class GraphPanel extends JPanel implements MouseListener{
 	public void mousePressed(MouseEvent me)
-    {
+	{
 		System.out.println("heeefew");
 	}
 	public void mouseReleased(MouseEvent me){}
@@ -47,6 +47,7 @@ public class GraphPanel extends JPanel implements MouseListener{
 		this.expression = expression;
 		this.xValues = xValues;
 		this.yValues = yValues;
+		addMouseListener(this);
 	}
 
 	@Override
