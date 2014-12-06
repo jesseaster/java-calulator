@@ -238,29 +238,20 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 			String increment) throws IllegalArgumentException{
 
 
-		double[][] pointsArray;
-		pointsArray = new double[2][10];
+		double[] xValues;
+		double[] yValues;
+		xValues = new double[10];
+		yValues = new double[10];
 		double dxStart = Double.parseDouble(xStart);
 		double dIncrement = Double.parseDouble(increment);
-		double xLocation = 0;
+		double xLocation;
 		for(int i = 0; i<10; i++){
 			xLocation = dxStart + dIncrement*i;
-			pointsArray[0][i] = xLocation;
-			pointsArray[1][i] = Double.parseDouble(calculate(expression, Double.toString(xLocation)));
+			xValues[i] = xLocation;
+			yValues[i] = Double.parseDouble(calculate(expression, Double.toString(xLocation)));
 		}
 
-		List<Double> scores = new ArrayList<>();
-		Random random = new Random();
-		int maxDataPoints = 40;
-		int maxScore = 10;
-		for (int i = 0; i < maxDataPoints; i++) {
-			scores.add((double) random.nextDouble() * maxScore);
-			//            scores.add((double) i);
-		}
-
-		String XLocation = Double.toString(xLocation);
-
-		GraphPanel mainPanel = new GraphPanel(scores);
+		GraphPanel mainPanel = new GraphPanel(expression, xValues, yValues);
 		JPanel xyPanel = new JPanel();
 		JLabel coordinates = new JLabel("X&Y Coordinates", SwingConstants.RIGHT);
 		JTextArea xyCoordinates = new JTextArea(100,100);
@@ -277,15 +268,9 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 		xyPanel.setLayout(new GridLayout(2,1));
 		xyPanel.add(coordinates);
 		xyPanel.add(xyCoordinates);
-		/*xyPanel.addMouseListener(new MouseAdapter(){
-		  public void mousePressed(java.awt.event.MouseEvent evt) {
-		  System.out.println(evt.getPoint());
-		  }
-		  });*/
 		JFrame  window = new JFrame(expression);
 		window.getContentPane().add(mainPanel,"North");
 		window.getContentPane().add(xyPanel,"South");
-		//window.setSize(600, 500);
 		window.pack();
 		window.setLocation(700,200);
 		window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -293,7 +278,7 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 		xyPanel.setBackground(Color.black);
 		System.out.print("\n");
 		for(int i = 0; i<10; i++){
-			System.out.print(pointsArray[0][i] + ", " + pointsArray[1][i] + "\n");
+			System.out.print(xValues[i] + ", " + yValues[i] + "\n");
 		}
 	}
 
@@ -301,7 +286,7 @@ public class KeyboardExpressionCalculator implements ActionListener, Accumulator
 		String Pi = Double.toString(Math.PI);
 		String E = Double.toString(Math.E);
 		String test = infix.replaceAll("\\^", " ^ ");
-		test = test.replaceAll("x", x_value);
+		test = test.replaceAll("x", "(" + x_value + ")");
 		test = test.replaceAll("r", " r ");
 		test = test.replaceAll("R", " r ");
 		test = test.replaceAll("\\+", " + ");
